@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	{% if lista_de_questoes %}
+		{% for questao in lista_de_questoes %}
+			<li><a href="/polls/{{idProva}}/{{idQuestao}}/">{{questao.textoQuestao}}<br>{{questao.imagemQuestao}}<br>{{questao.perguntaQuestao}} </a></li>	
+		{% endfor %}
+	{% else %}
+		<li>Questões não encontradas</li>
+	{% endif %}
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% for opcao.resposta_set.all %}
+                  {% if opcao.escolhidaOpcao == {{resposta.resposta %}
+                    <p>Parabéns, resposta correta</p>
+                  {% else %}
+                    <p>Resposta incorreta</p>
+                  {% endif %}
+                {% endfor %}

@@ -1,0 +1,122 @@
+{% extends 'polls/base.html' %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+{% load staticfiles %}
+
+<link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <div class="page-header">
+    <h1><a href="/">Provas ENADE</a></h1>
+  </div>
+</head>
+<body>
+{% block enade%}
+{% endblock %}
+{% if prova.questao_set.all %}
+        <h2>Questões do {{prova.tipoProva}} {{prova.anoProva}}</h2>
+        <ul id="questoes">
+        {% for questao in prova.questao_set.all %}
+          <hr id="linha" />
+          {% if questao.statusQuestao == '1' %}  
+          <h3>Questão {{questao.idQuestao}}</h3>
+          {% if questao.textoQuestao is not None %}
+            <p>{{questao.textoQuestao}}</p>
+          {% endif %}
+          {% if questao.imagemQuestao %}
+             <div class="col-xs-15" align="center">
+                <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}">
+                <br>
+            </div>
+          {% endif %}
+          {% if  questao.imagem2Questao %}
+            <div class="col-xs-15" align="center">
+                <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}">
+                <br>
+            </div>
+          {% endif %}
+          {% if questao.perguntaQuestao is not None %}
+            <p>{{questao.perguntaQuestao}}</p>
+          {% endif %}
+          
+          {% if prova.questao_set.all %}
+            <ul>
+            {% for opcao in questao.opcao_set.all %}
+              {% if questao.tipoQuestao == '1' %}
+              <form id="opcoes">
+                  <div class="funkyradio">
+                    <div class="funkyradio-default">
+                      <input type="radio" name="radio" id="radio1" />
+                      <label for="radio1">a) {{opcao.aOpcao}}</label>
+                    </div>
+                    <div class="funkyradio-default">
+                      <input type="radio" name="radio" id="radio1" />
+                      <label for="radio1">b) {{opcao.bOpcao}}</label>
+                    </div>
+                  
+                  <div class="funkyradio-default">
+                    <input type="radio" name="radio" id="radio1" />
+                    <label for="radio1">c) {{opcao.cOpcao}}</label>
+                  </div>
+                  <div class="funkyradio-default">
+                    <input type="radio" name="radio" id="radio1" />
+                    <label for="radio1">d) {{opcao.dOpcao}}</label>
+                  </div>
+                  <div class="funkyradio-default">
+                    <input type="radio" name="radio" id="radio1" />
+                    <label for="radio1">e) {{opcao.eOpcao}}</label>
+                  </div>
+
+                </div>
+
+                <label for="questao{{ forloop.counter }}">{{ questao.escolhidaQuestao }}</label><br /><input name="confirma" type="submit" class="btn btn-info" value="Confirma">
+            </form>
+              {% elif questao.tipoQuestao == '2' %}
+              <form id="opcoes">
+                {% if opcao.aOpcao %}
+                  <p>a) {{opcao.aOpcao}}</p><br>
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+                {% endif %}
+                {% if opcao.bOpcao %}
+                  <p>b) {{opcao.bOpcao}}</p><br>
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+                {% endif %}
+                {% if opcao.cOpcao %}
+                  <p>c) {{opcao.cOpcao}}</p><br>
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+                  </form>
+                {% endif %}
+                {% if opcao.dOpcao %}
+                  <p>d) {{opcao.dOpcao}}</p><br>
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+                {% endif %}
+                {% if opcao.eOpcao %}
+                  <p>e) {{opcao.eOpcao}}</p><br>
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+              </form>
+                {% else %}
+                  <textarea name=mytextarea cols=35 rows=10></textarea>
+                {% endif %}
+                
+              
+              {% endif %}
+            {% endfor %}
+        </ul>
+      {% endif %}
+      {% else %}
+        <p>Questão {{questao.idQuestao}} indisponível</p>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>Não há questões nessa prova</p>
+        {% endif %}
+</body>

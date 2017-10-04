@@ -1,0 +1,9 @@
+{% extends 'polls/base.html' %}
+<div class="container">
+    <h1>Registrar Usuário</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ registro.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</div>

@@ -1,0 +1,40 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<div class="page-header">
+      <h1>Provas ENADE</h1>
+  </div>
+  <nav id="menu">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/">Provas</a></li>
+        <li><a href="/registrar">Login</a></li>
+    </ul>
+  </nav>
+  <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
+</head>
+<body>
+	{% if lista_de_provas %}
+    <ul id="selecProva">
+    {% for prova in lista_de_provas %}
+      <a href="{{prova.idProva}}" target="_blank" id="listProva">{{prova.tipoProva}} {{prova.anoProva}}</a> 
+    {% endfor %}
+     </ul>
+  {% else %}
+    <h3>Não há provas</h3>
+  {% endif %} 
+  
+</body>
+</html>
