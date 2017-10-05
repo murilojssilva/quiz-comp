@@ -11,7 +11,7 @@ O presente projeto visa ao desenvolvimento de um sistema para... `TODO`.
 
 ### Windows
 
-Django é um framework web que roda a linguagem de programação Python. Para isso, deve-se primeiramente deve-se instalar o Python. Acesse https://python.org/downloads/, selecione o Download Python 2.7.14 e procure por "Instalador Windows x86-64 MSI" (64 bits) ou "Instalador Windows x86 MSI" (32 bits) (Para saber se a sua versão do Windows é 32 ou 64 bits, clique com o botão direito no Menu Iniciar, Sistema e procure a informação "Tipo de Sistema"). Após a instalação do Python, vá no Menu Iniciar e acesse o prompt de comando (cmd), escreva `cd "../.."` e dê Enter. Após, escreva `python --version` e verifique se o Python 2.7 está instalado.
+Django é um framework web que roda a linguagem de programação Python. Para isso, deve-se primeiramente deve-se instalar o Python. Acesse https://python.org/downloads/, selecione o Download Python 2.7.14 e procure por "Instalador Windows x86-64 MSI" (64 bits) ou "Instalador Windows x86 MSI" (32 bits) (Para saber se a sua versão do Windows é 32 ou 64 bits, clique com o botão direito no Menu Iniciar, Sistema e procure a informação "Tipo de Sistema"). Após a instalação do Python, vá no Menu Iniciar e acesse o prompt de comando (cmd), escreva `cd ../..` e dê Enter. Após, escreva `python --version` e verifique se o Python 2.7 está instalado.
 
 Após isso, instale o pip. Para isso, com o prompt de comando aberto, escreva `curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py` e dê enter. Após isso, escreva no prompt de comando `python get-pip.py` e dê enter novamente.
 
