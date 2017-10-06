@@ -6,9 +6,10 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-	url(r'^registrar/$', views.registrar, name='registrar'),
+	#url(r'^registrar/$', views.registrar, name='registrar'),
 	url(r'^$', views.index, name='index'),
-	#url(r'^registrar/$', views.registrar,name='registrar'),
+	url(r'^registrar/$', views.registrar,name='registrar'),
+	url(r'^login/$', views.user_login,name='login'),
 	url(r'^(?P<idProva>\w+)/$', views.detalhes, name ='detalhes'),
 	#url(r'^(?P<idProva>\w+)/$', views.resultados, name ='resultados'),
 	url(r'^(?P<idProva>\w+)/resultados/$', views.resultados, name='resultados'),

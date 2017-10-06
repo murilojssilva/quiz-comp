@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 from django import forms
-
 from polls.models import Prova, Usuario, Questao, Opcao, Resposta, Historico
 
-# class ProvaForm(forms.ModelForm)
-# 	tipoProva = forms.CharField(label='Tipo da Prova',max_length=5,null=False)
-# 	anoProva = forms.CharField(label='Ano da Prova',max_length=4,null=False)
-# 	class Meta:
-# 		model = Prova
+class ProvaForm(forms.ModelForm):
+	idProva  = forms.CharField(label='Id da Prova',max_length=5)
+	tipoProva = forms.CharField(label='Tipo da Prova',max_length=5)
+	anoProva = forms.CharField(label='Ano da Prova',max_length=4)
+ 	class Meta:
+ 		model = Prova
+ 		fields = ('idProva','tipoProva','anoProva')
 
 class UsuarioForm(forms.ModelForm):
 	matriculaUsuario = forms.CharField(label='Matrícula do Usuário',max_length=12)
@@ -16,7 +18,17 @@ class UsuarioForm(forms.ModelForm):
 	senhaUsuario = forms.CharField(max_length=20)
 	class Meta:
 		model = Usuario
-		fields = ('matriculaUsuario','nomeUsuario','emailUsuario','tipoUsuario')
+		fields = ('matriculaUsuario','nomeUsuario','emailUsuario','tipoUsuario','senhaUsuario')
+
+
+class LoginForm(forms.ModelForm):	
+	class Meta:
+		model = Usuario
+		widgets = {
+			'senhaUsuario': forms.PasswordInput(),
+		}
+		fields = ('matriculaUsuario','senhaUsuario')
+
 
 # class QuestaoForm(forms.ModelForm)
 # 	textoQuestao = forms.CharField(label='Texto da questão')

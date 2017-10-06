@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from .models import Prova, Questao, Opcao, Resposta, Usuario
@@ -5,12 +6,19 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from polls.forms.forms import UsuarioForm
+from .forms import UsuarioForm, LoginForm, ProvaForm
 
 
 def index(request):
 	lista_de_provas = Prova.objects.all()
-	return render(request, 'polls/index.html',{'lista_de_provas': lista_de_provas})
+	cprova = request.POST.get('prova_selecionada')
+	if request.method == 'POST':
+		sprova = Prova.objects.get(cprova = cprova)
+		sprova.add()
+		return redirect('polls/detalhes.html')
+	else:
+		form = ProvaForm()
+	return render(request, 'polls/index.html',{'form':form,'lista_de_provas': lista_de_provas})
 
 	
 def detalhes(request, idProva):
@@ -20,7 +28,6 @@ def detalhes(request, idProva):
 	except (KeyError,Questao.DoesNotExist):
 		return render (request,'polls/detalhes.html',{
 			'prova': prova,
-			'error_message': "Você não selecionou a questão",
 		})
 	else:
 		#questao_selec.votes += 1
@@ -34,7 +41,6 @@ def detalhes(request, idProva):
 	except (KeyError,Opcao.DoesNotExist):
 		return render (request,'polls/detalhes.html',{
 			'questao': questao,
-			'error_message': "Essa questão é discursiva",
 		})
 	else:
 		#opcao_selec.votes += 1
@@ -45,28 +51,24 @@ def detalhes(request, idProva):
 
 
 
-
-
-
-
-
-def resposta(request, idOpcao):
-	opcao = get_object_or_404(Opcao,pk=idOpcao)
-	try:
-		resposta_selec = prova.questao.resposta_set.get(pk=request.POST['resposta'])
-	except (KeyError,Resposta.DoesNotExist):
-		return HttpResponseRedirect (request,'polls/resposta.html',{
-			'opcao': opcao,
-			'error_message': "Você não selecionou a opção",
-		})
-	else:
-		#questao_selec.votes += 1
-
-		resposta_selec.save()
-		return HttpResponseRedirect(reverse('polls:resultados',args=(prova.idOpcao,)))
-
-
-
+def user_login(request):
+    if request.method == 'POST':
+        logar = LoginForm(request.POST)
+        if logar.is_valid():
+            cd = logar.cleaned_data
+            user = authenticate(matriculaUsuario=cd['matriculaUsuario'],
+                   senhaUsuario=cd['senhaUsuario'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect('/')
+                else:
+                    return HttpResponseRedirect('/login/')
+            else:
+                return HttpResponse('Login inválido')
+    else:
+        logar = LoginForm()
+    return render(request, 'polls/login.html', {'logar': logar})
 
 
 
@@ -82,6 +84,42 @@ def registrar(request):
 	else:
 		registro = UsuarioForm()
 		return render(request, 'polls/registrar.html',{'registro':registro})
+
+
+
+
+
+def resposta(request, idOpcao):
+	opcao = get_object_or_404(Opcao,pk=idOpcao)
+	try:
+		resposta_selec = prova.questao.resposta_set.get(pk=request.POST['resposta'])
+	except (KeyError,Resposta.DoesNotExist):
+		return HttpResponseRedirect (request,'polls/resposta.html',{
+			'opcao': opcao,
+		})
+	else:
+		#questao_selec.votes += 1
+
+		resposta_selec.save()
+		return HttpResponseRedirect(reverse('polls:resultados',args=(prova.idOpcao,)))
+
+
+
+
+
+def todasProvas(request):
+	if request.POST:
+		idProva = request.POST['prova_selecionada']
+		redirect('polls/detalhes.html',idProva=idProva)
+
+
+
+
+
+
+
+
+
 
 
 def resultados(request, idProva):

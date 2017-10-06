@@ -18,7 +18,7 @@
     <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/">Provas</a></li>
-        <li><a href="/registrar">Login</a></li>
+        <li><a href="/login">Login</a></li>
     </ul>
   </nav>
   <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
@@ -27,6 +27,39 @@
 </head>
 <body>
 	{% if lista_de_provas %}
+    <form method='post' action=''>
+    {% csrf_token %}
+    <select class="form-control"  name="prova_selecionada" id="prova_selecionada">
+        {% for prova in lista_de_provas %}
+            <option id="listaProvas" name="listaProvas" value='{{prova.idProva}}' desabled>{{prova.tipoProva}} {{prova.anoProva}}</option>
+            <input id="selProva" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}';" />
+        {% endfor %}
+
+    </select>
+    </form>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <ul id="selecProva">
     {% for prova in lista_de_provas %}
       <a href="{{prova.idProva}}" target="_blank" id="listProva">{{prova.tipoProva}} {{prova.anoProva}}</a> 
@@ -35,6 +68,14 @@
   {% else %}
     <h3>Não há provas</h3>
   {% endif %} 
+
+
+
+
+
+
+
+
   
 </body>
 </html>

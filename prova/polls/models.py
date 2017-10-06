@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 import json
-from PIL import Image
 
 class Prova(models.Model):
 	idProva = models.CharField(max_length=5,primary_key=True,null=False)
