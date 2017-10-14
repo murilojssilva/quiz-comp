@@ -1,0 +1,9 @@
+{% extends 'polls/base.html' %}
+{% block title %}{% endblock %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form }}
+  <button type="submit">Salvar alterações</button>
+</form>
+{% endblock %}

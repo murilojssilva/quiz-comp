@@ -1,22 +1,7 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-{% load staticfiles %}
+{% extends 'polls/base.html' %}
+{% block title %}{% endblock %}
 
-<link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
-
-<link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <div class="page-header">
-    <h1><a href="/">Provas ENADE</a></h1>
-  </div>
-</head>
-<body>
+{% block content %}
 
 {% if prova.questao_set.all %}
         <h2>Questões do {{prova.tipoProva}} {{prova.anoProva}}</h2>
@@ -42,68 +27,61 @@
           {% endif %}
           {% if questao.perguntaQuestao is not None %}
             <p>{{questao.perguntaQuestao}}</p>
-          {% endif %}
-          
+          {% endif %}          
           {% if prova.questao_set.all %}
             <ul>
             {% for opcao in questao.opcao_set.all %}
-              {% if questao.tipoQuestao == '1' %}
-              <form id="opcoes">
-                  <div class="funkyradio">
-                    <div class="funkyradio-default">
-                      <input type="radio" name="radio" id="radio1" />
-                      <label for="radio1">a) {{opcao.aOpcao}}</label>
-                    </div>
-                    <div class="funkyradio-default">
-                      <input type="radio" name="radio" id="radio1" />
-                      <label for="radio1">b) {{opcao.bOpcao}}</label>
-                    </div>
-                  
-                  <div class="funkyradio-default">
-                    <input type="radio" name="radio" id="radio1" />
-                    <label for="radio1">c) {{opcao.cOpcao}}</label>
-                  </div>
-                  <div class="funkyradio-default">
-                    <input type="radio" name="radio" id="radio1" />
-                    <label for="radio1">d) {{opcao.dOpcao}}</label>
-                  </div>
-                  <div class="funkyradio-default">
-                    <input type="radio" name="radio" id="radio1" />
-                    <label for="radio1">e) {{opcao.eOpcao}}</label>
-                  </div>
+              {% if questao.tipoQuestao == '2' %}
+              
+                <form action="" id="opcoes">
+                    <script>
+                     function mostrarSel(){
+                      alert('O valor selecionado é '+ getRadioValor('opcao_escolhida'));
+                     }
+                     function getRadioValor(name){
+                      var rads = document.getElementsByName(name);
+                      for(var i = 0; i < rads.length; i++){
+                       if(rads[i].checked){
+                        return rads[i].value;
+                       }
+                      }
 
-                </div>
+                      return null;
+                     }
+                    </script>
 
-                <label for="questao{{ forloop.counter }}">{{ questao.escolhidaQuestao }}</label><br /><input name="confirma" type="submit" class="btn btn-info" value="Confirma">
-            </form>
-              {% elif questao.tipoQuestao == '2' %}
+                    <input type="radio" name="opcao_escolhida" value="A"><label for='{{opcao.aOpcao}}'>a) {{opcao.aOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="B"><label for='{{opcao.bOpcao}}'>b) {{opcao.bOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="C"><label for='{{opcao.cOpcao}}'>c) {{opcao.cOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="D"><label for='{{opcao.dOpcao}}'>d) {{opcao.dOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="E"><label for='{{opcao.eOpcao}}'>e) {{opcao.eOpcao}}</label><br>
+                    <button onclick='mostrarSel()'> Mostra valor </button>
+
+                    {% for resposta in questao.resposta_set.all %}
+                      <p id="resposta">{{resposta.resposta}}</p>
+                    {% endfor %}
+              </form>
+
+              {% elif questao.tipoQuestao == '1' %}
               <form id="opcoes">
                 {% if opcao.aOpcao %}
                   <p>a) {{opcao.aOpcao}}</p><br>
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
                 {% endif %}
                 {% if opcao.bOpcao %}
                   <p>b) {{opcao.bOpcao}}</p><br>
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
                 {% endif %}
                 {% if opcao.cOpcao %}
                   <p>c) {{opcao.cOpcao}}</p><br>
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
                   </form>
                 {% endif %}
                 {% if opcao.dOpcao %}
                   <p>d) {{opcao.dOpcao}}</p><br>
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
                 {% endif %}
                 {% if opcao.eOpcao %}
                   <p>e) {{opcao.eOpcao}}</p><br>
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
               </form>
                 {% else %}
-                  <textarea name=mytextarea cols=35 rows=10></textarea>
                 {% endif %}
-                
-              
               {% endif %}
             {% endfor %}
         </ul>
@@ -116,4 +94,5 @@
   {% else %}
     <p>Não há questões nessa prova</p>
         {% endif %}
-</body>
+
+{% endblock %}

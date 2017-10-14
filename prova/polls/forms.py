@@ -16,18 +16,30 @@ class UsuarioForm(forms.ModelForm):
 	emailUsuario = forms.EmailField(label='E-mail')
 	tipoUsuario = forms.CharField(label='1 - Aluno 2 - Professor',max_length=1)
 	senhaUsuario = forms.CharField(max_length=20)
-	class Meta:
-		model = Usuario
-		fields = ('matriculaUsuario','nomeUsuario','emailUsuario','tipoUsuario','senhaUsuario')
-
-
-class LoginForm(forms.ModelForm):	
+	fotoUsuario = forms.FileField(label='Foto do avatar')
 	class Meta:
 		model = Usuario
 		widgets = {
 			'senhaUsuario': forms.PasswordInput(),
 		}
+		fields = ('matriculaUsuario','nomeUsuario','emailUsuario','tipoUsuario','senhaUsuario','fotoUsuario')
+
+
+
+class LoginForm(forms.Form):
+	matriculaUsuario = forms.CharField(label = 'Nombre de usuario')
+	senhaUsuario = forms.CharField(label = 'Contraseña', widget = forms.PasswordInput)
+	class Meta:
+		model = Usuario
 		fields = ('matriculaUsuario','senhaUsuario')
+
+class AlterarSenhaForm(forms.ModelForm):
+	class Meta:
+		model = Usuario
+		widgets = {
+			'senhaUsuario': forms.PasswordInput(),
+		}
+		fields = ('matriculaUsuario','senhaUsuario','senhaUsuario')
 
 
 # class QuestaoForm(forms.ModelForm)

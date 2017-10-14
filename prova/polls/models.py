@@ -15,13 +15,13 @@ class Usuario(models.Model):
 	tipoUsuario = models.CharField(max_length=1,null=False)
 	emailUsuario = models.EmailField(null=False)
 	senhaUsuario = models.CharField(max_length=20,null=False)
+	fotoUsuario = models.FileField(upload_to='static/img/uploads/profile',blank=True,null=True)
 	def __str__(self):
 		return self.matriculaUsuario
 
 class Questao(models.Model):
 	idQuestao = models.CharField(max_length=7,primary_key=True,null=False)
 	idProva = models.ForeignKey(Prova)
-	areaQuestao = models.CharField(max_length=50,null=False)
 	tipoQuestao = models.CharField(max_length=1,null=False)
 	textoQuestao = models.CharField(max_length=2000,blank=True,null=True)
 	imagemQuestao = models.FileField(upload_to='static/img/uploads',blank=True,null=True)
@@ -56,3 +56,8 @@ class Resposta(models.Model):
 	resposta = models.CharField(max_length=1,null=False)
 	def __str__(self):
 		return self.idResposta
+
+class AreaQuestao(models.Model):
+	idTipoQuestao = models.CharField(max_length=10,primary_key=True,null=False)
+	idQuestao = models.ForeignKey(Questao)
+	areaQuestao = models.CharField(max_length=20,null=False)		

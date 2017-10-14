@@ -6,15 +6,18 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .forms import UsuarioForm, LoginForm, ProvaForm
+from .forms import UsuarioForm, LoginForm, ProvaForm, AlterarSenhaForm
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash, login, logout, authenticate
+
 
 
 def index(request):
-	lista_de_provas = Prova.objects.all()
-	cprova = request.POST.get('prova_selecionada')
+	lista_de_provas = Prova.objects.filter()
+	cprova = request.POST.get('idProva')
 	if request.method == 'POST':
 		sprova = Prova.objects.get(cprova = cprova)
-		sprova.add()
+		sprova.select()
 		return redirect('polls/detalhes.html')
 	else:
 		form = ProvaForm()
@@ -52,23 +55,77 @@ def detalhes(request, idProva):
 
 
 def user_login(request):
-    if request.method == 'POST':
-        logar = LoginForm(request.POST)
-        if logar.is_valid():
-            cd = logar.cleaned_data
-            user = authenticate(matriculaUsuario=cd['matriculaUsuario'],
-                   senhaUsuario=cd['senhaUsuario'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect('/')
-                else:
-                    return HttpResponseRedirect('/login/')
-            else:
-                return HttpResponse('Login inválido')
-    else:
-        logar = LoginForm()
-    return render(request, 'polls/login.html', {'logar': logar})
+	if request.method == 'POST':
+		logar = LoginForm(data=request.POST)
+		if logar.is_valid():
+			login(request, logar.get_user())
+			return HttpResponseRedirect("/")
+		else:
+			return render(request, 'polls/thanks.html', {"logar": logar})
+	return render(request, 'polls/login.html', {"logar": LoginForm()})
+
+
+def user_login(request):
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+		if form.is_valid():
+			matriculaUsuario = form.cleaned_data.get("matriculaUsuario")
+			senhaUsuario = form.cleaned_data.get("senhaUsuario")
+			user = authenticate(matriculaUsuario=matriculaUsuario,senhaUsuario=senhaUsuario)
+			if user is not None:
+				if user.is_active:
+					login(request, user)
+					return render(request, 'polls/thanks.html')
+				else:
+					return render(request, 'polls/login.html', {"form": form})
+			else:
+				return render(request, 'polls/registrar.html', {"form": form})
+	else:
+		form = LoginForm()
+	return render(request, 'polls/login.html', {'form': form})
+
+
+
+def logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('/'))
+
+
+
+def alterarsenha(request):
+	if request.method == 'POST':
+		form = AlterarSenhaForm(request.usuario, request.POST)
+		if form.is_valid():
+			usuario = form.save()
+			update_session_auth_hash(request, usuario)  # Important!
+			messages.success(request, 'Your password was successfully updated!')
+			return redirect('alterarsenha')
+		else:
+			messages.error(request, 'Please correct the error below.')
+	else:
+		form = AlterarSenhaForm(request.usuario)
+	return render(request, 'polls/alterarsenha.html', {
+		'form': form
+    })
+
+
+def thanks(request):
+	return render(request,'polls/thanks.html')
+
+
+
+def resposta(request):
+	opcao = get_object_or_404(Opcao,pk=idOpcao)
+	try:
+		resposta_selec = opcao.gabarito_set.get(pk=request.POST['gabarito'])
+	except (KeyError,Gabarito.DoesNotExist):
+		return render (request,'polls/resposta.html',{
+			'opcao': opcao,
+		})
+	else:
+		resposta_selec.save()
+		return HttpResponseRedirect(reverse('polls:resposta',args=(opcao.idOpcao,)))
+	#return render(request,'polls/resposta.html')
 
 
 
@@ -77,7 +134,6 @@ def registrar(request):
 		registro =UsuarioForm(request.POST)
 		if registro.is_valid():
 			registro.save()
-			print ("teste")
 			return HttpResponseRedirect('/')
 		else:
 			return HttpResponseRedirect('/registrar/')
@@ -86,45 +142,6 @@ def registrar(request):
 		return render(request, 'polls/registrar.html',{'registro':registro})
 
 
-
-
-
-def resposta(request, idOpcao):
-	opcao = get_object_or_404(Opcao,pk=idOpcao)
-	try:
-		resposta_selec = prova.questao.resposta_set.get(pk=request.POST['resposta'])
-	except (KeyError,Resposta.DoesNotExist):
-		return HttpResponseRedirect (request,'polls/resposta.html',{
-			'opcao': opcao,
-		})
-	else:
-		#questao_selec.votes += 1
-
-		resposta_selec.save()
-		return HttpResponseRedirect(reverse('polls:resultados',args=(prova.idOpcao,)))
-
-
-
-
-
-def todasProvas(request):
-	if request.POST:
-		idProva = request.POST['prova_selecionada']
-		redirect('polls/detalhes.html',idProva=idProva)
-
-
-
-
-
-
-
-
-
-
-
-def resultados(request, idProva):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % idProva)
 
 class IndexView(generic.ListView):
 	template_name = 'polls/index.html'

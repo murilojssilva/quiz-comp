@@ -1,16 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
-<body>
-	{% if lista_de_questoes %}
-		{% for questao in lista_de_questoes %}
-			<li><a href="/polls/{{idProva}}/{{idQuestao}}/">{{questao.textoQuestao}}<br>{{questao.imagemQuestao}}<br>{{questao.perguntaQuestao}} </a></li>	
-		{% endfor %}
-	{% else %}
-		<li>Questões não encontradas</li>
-	{% endif %}
-</body>
-</html>
+{% extends 'polls/base.html' %}
+{% block title %}{% endblock %}
+
+{% block content %}
+
+{% if prova.questao_set.all %}
+        <h2>Questões do {{prova.tipoProva}} {{prova.anoProva}}</h2>
+        <ul id="questoes">
+        {% for questao in prova.questao_set.all %}
+          <hr id="linha" />
+          {% if questao.statusQuestao == '1' %}  
+          <h3>Questão {{questao.idQuestao}}</h3>
+          {% if questao.textoQuestao is not None %}
+            <p>{{questao.textoQuestao}}</p>
+          {% endif %}
+          {% if questao.imagemQuestao %}
+             <div class="col-xs-15" align="center">
+                <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}">
+                <br>
+            </div>
+          {% endif %}
+          {% if  questao.imagem2Questao %}
+            <div class="col-xs-15" align="center">
+                <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}">
+                <br>
+            </div>
+          {% endif %}
+          {% if questao.perguntaQuestao is not None %}
+            <p>{{questao.perguntaQuestao}}</p>
+          {% endif %}          
+          {% if prova.questao_set.all %}
+            <ul>
+            {% for opcao in questao.opcao_set.all %}
+              {% if questao.tipoQuestao == '1' %}
+              <form id="opcoes">
+                <div class="container">
+                  <div class="row">
+                    <div class="radio radio-primary">
+                      <input type="radio" name="radio1" id="radio1" value="a">
+                        <label for="radio1">a) {{opcao.aOpcao}}
+                        </label>
+                    </div>
+                    <div class="radio radio-primary">
+                      <input type="radio" name="radio1" id="radio2" value="b">
+                        <label for="radio2">b) {{opcao.bOpcao}}
+                        </label>
+                    </div>
+                    <div class="radio radio-primary">
+                      <input type="radio" name="radio1" id="radio3" value="c">
+                        <label for="radio3">c) {{opcao.cOpcao}}
+                        </label>
+                    </div>
+                    <div class="radio radio-primary">
+                      <input type="radio" name="radio1" id="radio4" value="d">
+                        <label for="radio4">d) {{opcao.dOpcao}}
+                        </label>
+                    </div>
+                    <div class="radio radio-primary">
+                      <input type="radio" name="radio1" id="radio5" value="e">
+                        <label for="radio5">e) {{opcao.eOpcao}}
+                        </label>
+                    </div>
+                  </div>
+                </div>
+                <label for="questao{{ forloop.counter }}">{{ questao.escolhidaQuestao }}</label><br /><input name="confirma" type="button" class="btn btn-info" value="Confirma">
+            </form>
+              {% elif questao.tipoQuestao == '2' %}
+              <form id="opcoes">
+                {% if opcao.aOpcao %}
+                  <p>a) {{opcao.aOpcao}}</p><br>
+                {% endif %}
+                {% if opcao.bOpcao %}
+                  <p>b) {{opcao.bOpcao}}</p><br>
+                {% endif %}
+                {% if opcao.cOpcao %}
+                  <p>c) {{opcao.cOpcao}}</p><br>
+                  </form>
+                {% endif %}
+                {% if opcao.dOpcao %}
+                  <p>d) {{opcao.dOpcao}}</p><br>                  
+                {% endif %}
+                {% if opcao.eOpcao %}
+                  <p>e) {{opcao.eOpcao}}</p><br>
+
+              </form>
+
+              {% endif %}
+            {% endfor %}
+        </ul>
+      {% endif %}
+      {% else %}
+        <p>Questão {{questao.idQuestao}} indisponível</p>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>Não há questões nessa prova</p>
+        {% endif %}
+{% endblock %}

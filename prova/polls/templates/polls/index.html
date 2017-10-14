@@ -1,42 +1,25 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-{% load static %}
+{% extends 'polls/base.html' %}
+{% block title %}{% endblock %}
 
-<link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
+{% block content %}
+  <p>Selecione o item desejado</p>
 
-<link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<div class="page-header">
-      <h1>Provas ENADE</h1>
-  </div>
-  <nav id="menu">
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/">Provas</a></li>
-        <li><a href="/login">Login</a></li>
-    </ul>
-  </nav>
-  <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="{% static 'polls/js/script.js' %}">
-  <link rel="stylesheet" type="text/css" href="{% static 'polls/estilo.css' %}" />
-</head>
-<body>
-	{% if lista_de_provas %}
+
+  {% if lista_de_provas %}
     <form method='post' action=''>
     {% csrf_token %}
+    <h2>Provas</h2>
     <select class="form-control"  name="prova_selecionada" id="prova_selecionada">
-        {% for prova in lista_de_provas %}
-            <option id="listaProvas" name="listaProvas" value='{{prova.idProva}}' desabled>{{prova.tipoProva}} {{prova.anoProva}}</option>
-            <input id="selProva" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}';" />
-        {% endfor %}
-
+      {% for prova in lista_de_provas %}
+        {% if prova.questao_set.all %}
+          <option id="{{prova.idProva}}" name="listaProvas" value='{{prova.idProva}}' desabled>{{prova.tipoProva}} {{prova.anoProva}}</option>
+        {% endif %}
+      {% endfor %}
     </select>
-    </form>  
+    <input id="selProva" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}';" /><script type="text/javascript">$("#selProva").on('click',function(){location.href=$("#prova_selecionada").val();})</script>
+    </form>
+  {% endif %}
 
 
 
@@ -60,14 +43,6 @@
 
 
 
-    <ul id="selecProva">
-    {% for prova in lista_de_provas %}
-      <a href="{{prova.idProva}}" target="_blank" id="listProva">{{prova.tipoProva}} {{prova.anoProva}}</a> 
-    {% endfor %}
-     </ul>
-  {% else %}
-    <h3>Não há provas</h3>
-  {% endif %} 
 
 
 
@@ -76,6 +51,41 @@
 
 
 
-  
-</body>
-</html>
+
+
+
+
+  {% if lista_de_provas %}
+    <form method='post' action=''>
+    {% csrf_token %}
+    <h2>Questões</h2>
+    <select class="form-control"  name="prova_selecionada" id="questao_selecionada">
+      {% for prova in lista_de_provas %}
+        {% for questao in prova.questao_set.all %}
+          <option id="{{questao.idQuestao}}" name="listaQuestoes" value='{{questao.idQuestao}}' desabled>{{questao.idQuestao}}</option>
+        {% endfor %}
+      {% endfor %}
+    </select>
+    <input id="selQuestao" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}/{{questao.idQuestao}}';"/><script type="text/javascript">$("#selQuestao").on('click',function(){location.href=$("#questao_selecionada").val();})</script>
+    </form> 
+  {% endif %}
+
+
+
+
+
+  {% if lista_de_provas %}
+    <form method='post' action=''>
+    {% csrf_token %}
+    <h2>Provas</h2>
+    <select class="form-control"  name="prova_selecionada" id="prova_selecionada">
+      {% for prova in lista_de_provas %}
+        {% if prova.questao_set.all %}
+          <option id="{{prova.idProva}}" name="listaProvas" value='{{prova.idProva}}' desabled>{{prova.tipoProva}} {{prova.anoProva}}</option>Mdjss.199
+        {% endif %}
+      {% endfor %}
+    </select>
+    <input id="selProva" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}';" />
+    </form> 
+  {% endif %}
+{% endblock %}
