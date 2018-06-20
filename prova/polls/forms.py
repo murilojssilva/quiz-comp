@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from polls.models import Prova, Usuario, Questao, Opcao, Resposta, Historico
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from polls.models import Prova, Usuario, Questao, Opcao, Resposta, Historico, Categoria
+
+class CategoriaForm(forms.ModelForm):
+	idCategoria = forms.CharField(label='Id da Prova',max_length=5)
+	nomeCategoria = forms.CharField(label='Categoria',max_length=20)
+	class Meta:
+ 		model = Categoria
+ 		fields = ('idCategoria','nomeCategoria')
 
 class ProvaForm(forms.ModelForm):
 	idProva  = forms.CharField(label='Id da Prova',max_length=5)
@@ -10,19 +19,12 @@ class ProvaForm(forms.ModelForm):
  		model = Prova
  		fields = ('idProva','tipoProva','anoProva')
 
-class UsuarioForm(forms.ModelForm):
+class UsuarioForm(UserCreationForm):
 	matriculaUsuario = forms.CharField(label='Matrícula do Usuário',max_length=12)
-	nomeUsuario = forms.CharField(label='Nome do Usuário',max_length=200)
-	emailUsuario = forms.EmailField(label='E-mail')
 	tipoUsuario = forms.CharField(label='1 - Aluno 2 - Professor',max_length=1)
-	senhaUsuario = forms.CharField(max_length=20)
-	fotoUsuario = forms.FileField(label='Foto do avatar')
 	class Meta:
-		model = Usuario
-		widgets = {
-			'senhaUsuario': forms.PasswordInput(),
-		}
-		fields = ('matriculaUsuario','nomeUsuario','emailUsuario','tipoUsuario','senhaUsuario','fotoUsuario')
+		model = User
+		fields = ('username','first_name', 'last_name', 'email', 'password1', 'password2', )
 
 
 

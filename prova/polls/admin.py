@@ -12,6 +12,8 @@ from .models import Resposta
 
 from .models import Historico
 
+from .models import Categoria
+
 admin.site.register(Prova)
 
 admin.site.register(Questao)
@@ -23,3 +25,5 @@ admin.site.register(Usuario)
 admin.site.register(Resposta)
 
 admin.site.register(Historico)
+
+admin.site.register(Categoria)

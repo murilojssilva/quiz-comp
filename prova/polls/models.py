@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 import json
 
+
 class Prova(models.Model):
 	idProva = models.CharField(max_length=5,primary_key=True,null=False)
 	tipoProva = models.CharField(max_length=5,null=False)
@@ -19,9 +20,16 @@ class Usuario(models.Model):
 	def __str__(self):
 		return self.matriculaUsuario
 
+class Categoria(models.Model):
+	idCategoria = models.CharField(max_length=12,primary_key=True,null=False,default='Categoria')
+	nomeCategoria = models.CharField(max_length=20,null=False)
+	def __str__(self):
+		return self.idCategoria
+
 class Questao(models.Model):
 	idQuestao = models.CharField(max_length=7,primary_key=True,null=False)
 	idProva = models.ForeignKey(Prova)
+	idCategoria = models.ForeignKey(Categoria,default='Categoria')
 	tipoQuestao = models.CharField(max_length=1,null=False)
 	textoQuestao = models.CharField(max_length=2000,blank=True,null=True)
 	imagemQuestao = models.FileField(upload_to='static/img/uploads',blank=True,null=True)
@@ -30,6 +38,7 @@ class Questao(models.Model):
 	statusQuestao = models.CharField(max_length=1,null=False)
 	def __str__(self):
 		return self.idQuestao
+
 
 class Opcao(models.Model):
 	idOpcao = models.CharField(max_length=8,primary_key=True,null=False)

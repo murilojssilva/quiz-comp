@@ -3,10 +3,10 @@
 
 {% block content %}
 
-{% if prova.questao_set.all %}
-        <h2>Questões do {{prova.tipoProva}} {{prova.anoProva}}</h2>
+{% if prova.idProva and questao.idQuestao %}
         <ul id="questoes">
-        {% for questao in prova.questao_set.all %}
+        
+          <h2>Questão {{questao.idQuestao}} do {{prova.tipoProva}} {{prova.anoProva}}</h2>
           <hr id="linha" />
           {% if questao.statusQuestao == '1' %}  
           <h3>Questão {{questao.idQuestao}}</h3>
@@ -31,40 +31,50 @@
           {% if prova.questao_set.all %}
             <ul>
             {% for opcao in questao.opcao_set.all %}
-              {% if questao.tipoQuestao == '1' %}
-              <form id="opcoes">
-                <div class="container">
-                  <div class="row">
-                    <div class="radio radio-primary">
-                      <input type="radio" name="radio1" id="radio1" value="a">
-                        <label for="radio1">a) {{opcao.aOpcao}}
-                        </label>
+              {% if questao.tipoQuestao == '2' %}
+              <form action="" id="opcoes">
+                    <script>
+                     function mostrarSel(){
+                      alert(document.getElementsByName("resposta_questao")[0].value);
+                     }
+                     function getRadioValor(name){
+                      var rads = document.getElementsByName(name);
+                      for(var i = 0; i < rads.length; i++){
+                       if(rads[i].checked){
+                        return rads[i].value;
+                       }
+                      }
+
+                      return null;
+                     }
+                    </script>
+
+                    <input type="radio" name="opcao_escolhida" value="A"><label for='{{opcao.aOpcao}}'>a) {{opcao.aOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="B"><label for='{{opcao.bOpcao}}'>b) {{opcao.bOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="C"><label for='{{opcao.cOpcao}}'>c) {{opcao.cOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="D"><label for='{{opcao.dOpcao}}'>d) {{opcao.dOpcao}}</label><br>
+                    <input type="radio" name="opcao_escolhida" value="E"><label for='{{opcao.eOpcao}}'>e) {{opcao.eOpcao}}</label><br>
+                    {% for resposta in questao.resposta_set.all %}
+                      <input style="display: none;" id="resposta_questao" name="resposta_questao" value='{{resposta.resposta}}'>
+                    {% endfor %}
+                    <button class="btn btn-primary" onclick='mostrarSel()'> Mostra valor </button>
+                    <button type="button" class="btn btn-primary" onclick="Mudarestado('minhaDiv')">Mostrar gabarito</button>
+                    <script type="text/javascript">
+                      function Mudarestado(el) {
+                        var display = document.getElementById(el).style.display;
+                        if(display == "none")
+                          document.getElementById(el).style.display = 'block';
+                        else
+                          document.getElementById(el).style.display = 'none';
+                      }
+                    </script>
+                    <div id="minhaDiv" style="display: none;">Resposta:
+                      {% for resposta in questao.resposta_set.all %}
+                        {{resposta.resposta}}
+                      {% endfor %}
                     </div>
-                    <div class="radio radio-primary">
-                      <input type="radio" name="radio1" id="radio2" value="b">
-                        <label for="radio2">b) {{opcao.bOpcao}}
-                        </label>
-                    </div>
-                    <div class="radio radio-primary">
-                      <input type="radio" name="radio1" id="radio3" value="c">
-                        <label for="radio3">c) {{opcao.cOpcao}}
-                        </label>
-                    </div>
-                    <div class="radio radio-primary">
-                      <input type="radio" name="radio1" id="radio4" value="d">
-                        <label for="radio4">d) {{opcao.dOpcao}}
-                        </label>
-                    </div>
-                    <div class="radio radio-primary">
-                      <input type="radio" name="radio1" id="radio5" value="e">
-                        <label for="radio5">e) {{opcao.eOpcao}}
-                        </label>
-                    </div>
-                  </div>
-                </div>
-                <label for="questao{{ forloop.counter }}">{{ questao.escolhidaQuestao }}</label><br /><input name="confirma" type="button" class="btn btn-info" value="Confirma">
-            </form>
-              {% elif questao.tipoQuestao == '2' %}
+              </form>
+              {% elif questao.tipoQuestao == '1' %}
               <form id="opcoes">
                 {% if opcao.aOpcao %}
                   <p>a) {{opcao.aOpcao}}</p><br>
@@ -77,13 +87,12 @@
                   </form>
                 {% endif %}
                 {% if opcao.dOpcao %}
-                  <p>d) {{opcao.dOpcao}}</p><br>                  
+                  <p>d) {{opcao.dOpcao}}</p><br>
                 {% endif %}
                 {% if opcao.eOpcao %}
                   <p>e) {{opcao.eOpcao}}</p><br>
-
+                {% endif %}
               </form>
-
               {% endif %}
             {% endfor %}
         </ul>
@@ -91,9 +100,9 @@
       {% else %}
         <p>Questão {{questao.idQuestao}} indisponível</p>
       {% endif %}
-    {% endfor %}
     </ul>
+  
   {% else %}
     <p>Não há questões nessa prova</p>
-        {% endif %}
+  {% endif %}
 {% endblock %}

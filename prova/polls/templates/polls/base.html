@@ -18,7 +18,11 @@
 
             <ul class="nav navbar-nav navbar-right">
               {% if user.is_authenticated %}
-              <li>Olá, {{usuario.nomeUsuario}}</li>
+              <div class="navbar-header">
+                <a class="navbar-brand" href="/">Olá, {{user.username}}</a>
+              </div>
+              
+              <li><a href="/alterarsenha">Alterar Senha</a></li>
               <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
               {% else %}
               <li><a href="/registrar"><span class="glyphicon glyphicon-user"></span> Cadastrar</a></li>
@@ -37,9 +41,18 @@
         <div class="right">
           <h1>{% block title %}{% endblock %}</h1>
           {% block content %}
-
+            {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
           {% endblock %}
         </div>
       </div>
+      <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block javascript %}{% endblock %}
     </body>
 </html>
