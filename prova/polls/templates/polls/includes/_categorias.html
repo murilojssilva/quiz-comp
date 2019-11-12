@@ -1,0 +1,14 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Categoria</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for categoria in categorias %}
+      <tr>
+        <td>{{ categoria.nomeCategoria }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

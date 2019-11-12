@@ -1,123 +1,128 @@
 {% extends 'polls/base.html' %}
+{% load widget_tweaks %}
 {% block title %}{% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-   <div id="login-overlay" class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          {% if user.is_authenticated %}
-            <h4 class="modal-title" id="myModalLabel">Selecione o item desejado</h4>
-          {% endif %}
-        </div>
-          <div class="modal-body">
-            <div class="row">
-              {% if lista_de_provas %}
-                {% csrf_token %}
-                  <form class="form-inline" role="form">
-                    <div class="form-group">
-                      <label for="provas" class="control-label col-sm-4">Provas</label>
-                      <div class="col-sm-6">
-                      <select class="form-control" name="prova_selecionada" id="prova_selecionada" style="width:100%;" >
-                        {% for prova in lista_de_provas %}
-                          {% if prova.questao_set.all %}
-                           <option id="{{prova.idProva}}" name="listaProvas" value='{{prova.idProva}}' desabled>{{prova.tipoProva}} {{prova.anoProva}}</option>
-                          {% endif %}
-                        {% endfor %}
-                      </select>
-                      </div>
-                      <div class="col-sm-2">
-                        <input id="selProva" type="button" value="Confirma" onclick = "location.href ='{{prova.idProva}}';" class="btn btn-primary" /><script type="text/javascript">$("#selProva").on('click',function(){location.href=$("#prova_selecionada").val();})</script>
-                      </div>
-                    </div>
-                  </form>
-              {% endif %}
-              {% if lista_de_provas %}
-                {% csrf_token %}
-                  <form class="form-inline" role="form">
-                    <div class="form-group">
-                      <label for="questoes" class="control-label col-sm-4">Questões</label>
-                      <div class="col-sm-6">
-                      <select class="form-control" name="questao_selecionada" id="questao_selecionada" style="width:100%;">
-                      {% for prova in lista_de_provas %}
-                        {% for questao in prova.questao_set.all %}
-                          <option id="{{questao.idQuestao}}" name="listaQuestoes" value='{{prova.idProva}}/{{questao.idQuestao}}' desabled>{{questao.idQuestao}}</option>
-                        {% endfor %}
-                      {% endfor %}
-                      </select>
-                      </div>
-                      <div class="col-sm-2">
-                        <input id="selQuestao" type="button" value="Confirma" onclick = "location.href ='{{questao.idQuestao}}';" class="btn btn-primary" /><script type="text/javascript">$("#selQuestao").on('click',function(){location.href=$("#questao_selecionada").val();})</script>
-                    </div>
-                  </div>
-                  </form>
-                   
-                {% endif %}
-                
-        </div>
-      </div>
+{% if user.is_authenticated %}
+
+
+     <div class="row">
+    <h1 class="display-3 text-center text-primary">EDUQUIZ</h1>
+    <br><br><br>
+    {% if user.usuario.tipoUsuario == 1 %}
+
+      <style> 
+          img { 
+          max-width: 100%; 
+          max-height: 50%; 
+          padding-top:10px; 
+          } 
+          h1 { 
+          color: green; 
+          } 
+      </style> 
+    <div class="card-group"> 
+      <div class="row"> 
+            <div align="center" class="card col-md-4"><a href="/pesquisa">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Questões</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/search.png">    
+            </div></a>
+            <div align="center" class="card col-md-4"><a href="/desempenho">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Desempenho</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/desempenho.jpg"> 
+            </div></a> 
+            <div align="center" class="card col-md-4"><a href="/quiz/selecionar">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Quiz</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/simulado.png"> 
+            </div></a>
+        </div> 
+    </div> 
+
+    {% else %}
+       <div class="card-group"> 
+      <div class="row"> 
+            <div align="center" class="card col-md-4"><a href="/pesquisa">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Questões</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/search.png">    
+            </div></a>
+            <div align="center" class="card col-md-4"><a href="/questoes/lista_aprovacao">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Aprovar questão</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/check.png"> 
+            </div></a> 
+            <div align="center" class="card col-md-4"><a href="/desempenho_alunos">
+              <div class="card-body"> 
+                <h3 class="card-title text-primary">Desempenho dos alunos</h3> 
+              </div>
+              <img class="card-img-top" src= "/static/img/desempenho.jpg"> 
+            </div></a>
+        </div> 
     </div>
-  </div>
+    {% endif %}
+
+
+</div>
 {% else %}
 {% if form.errors %}
 
-<p>Sua matrícula ou senha estão incorretas. Tente novamente</p>
+<div class="alert alert-danger text-center" role="alert"><strong>Seu endereço de e-mail, nome de usuário e/ou senha estão incorretos. Tente novamente</strong></div>
 {% endif %}
 
 {% if next %}
     {% if user.is_authenticated %}
 
-<p>Sua conta não tem acesso à essa página. Para prosseguir, por favor acesse com a sua matrícula</p>
+<div class="alert alert-danger text-center" role="alert"><strong>Sua conta não tem acesso à essa página. Para prosseguir, por favor acesse com a sua matrícula</strong></div>
     {% else %}
 
-<p>Por favor, acesse este site para visualizar esta página</p>
+<div class="alert alert-danger text-center" role="alert"><strong>Por favor, acesse este site para visualizar esta página</strong></div>
     {% endif %}
 {% endif %}
-<div id="login-overlay" class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="myModalLabel">Acesse o sistema de provas do IME/UERJ</h4>
-          </div>
-          <div class="modal-body">
-              <div class="row">
-                  <div class="col-xs-6">
-                      <div class="well">
-                          <form id="login-form" class="form-horizontal" role="form" action="{% url 'login' %}" method="post">{% csrf_token %}
-                              <div class="form-group">
-                                  <label for="username" class="control-label">Matrícula</label>
-                                  <input type="text" class="form-control" id="username" name="username" value="" required="" title="Please enter you username" placeholder="Matrícula" value="{{ matriculaUsuario }}">
-                                  <span class="help-block"></span>
-                              </div>
-                              <div class="form-group">
-                                  <label for="password" class="control-label">Senha</label>
-                                  <input type="password" class="form-control" id="password" name="password" value="{{ senhaUsuario }}" required="" title="Please enter your password">
-                                  <span class="help-block"></span>
-                              </div>
-                              <div id="loginErrorMsg" class="alert alert-error hide">Usuário e/ou senha inválido(s)</div>
-                              <div class="checkbox">
-                                  <label>
-                                      <input type="checkbox" name="remember" id="remember"> Lembrar acesso
-                                  </label>
-                                  
-                              </div><br>
-                              <div>
-                                <input type="hidden" name="next" value="{{ next }}" />
-                                <input class="btn btn-success btn-block" type="submit" value="Login"/>
-                             </div>
-                          </form>
-                      </div>
-                  </div>
-                  <div class="col-xs-6">
-                      <p class="lead">Register now for <span class="text-success">FREE</span></p>
-                      <ul class="list-unstyled" style="line-height: 2">
-                          <li><span class="fa fa-check text-success"></span>Não possui cadastro? Crie uma conta</li>
-                      </ul>
-                      <p><a href="/registrar/" class="btn btn-info btn-block">Criar cadastro</a></p>
-                  </div>
-              </div>
-          </div>
+  <div id="login-overlay" class="modal-dialog">
+  <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="text-center modal-title" id="myModalLabel">Sistema de provas do IME/UERJ</h4>
       </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-12">
+           <form id="login-form" class="form-horizontal" role="form" action="{% url 'login' %}" method="post">{% csrf_token %}
+          <div class="field-wrapper">
+            <div class="label-wrapper">
+              <label for="username" class="control-label">Nome de usuário/E-mail</label>
+              <input type="text" class="form-control" id="username" name="username" value="" required="" title="Por favor, insira seu nome de usuário ou e-mail" placeholder="Nome de usuário/E-mail" value="{{ matriculaUsuario }}">
+              <span class="help-block"></span>
+            </div>
+          </div>
+          <div class="field-wrapper">
+            <div class="label-wrapper">
+               <label for="password" class="control-label">Senha</label>
+               <input type="password" class="form-control" id="password" name="password" value="{{ senhaUsuario }}" required="" title="Please enter your password">
+                 <span class="help-block"></span>
+            </div>
+          </div>
+            <div id="loginErrorMsg" class="alert alert-error hide">Usuário e/ou senha inválido(s)</div>
+            <br>
+        <div class="col-xs-6">
+           <input type="hidden" name="next" value="{{ next }}" />
+           <input class="btn btn-primary btn-block" type="submit" value="Login"/>
+         </div>
+         <div class="col-xs-6">
+           <a href="/registrar/" class="btn btn-primary btn-block">Criar cadastro</a>
+         </div>
+           </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 {% endif %}
 {% endblock %}

@@ -1,24 +1,63 @@
 {% extends 'polls/base.html' %}
-
+{% load widget_tweaks %}
 {% block content %}
 {% if form.errors %}
-	<p>Não foi possível realizar o cadastro. Tente novamente</p>
+	<div class="alert alert-danger text-center" role="alert"><strong>Não foi possível realizar o cadastro. Tente novamente</strong></div>
 {% endif %}
-  <h2>Sign up</h2>
-  <form method="post">
+  <form method="post" novalidate>
     {% csrf_token %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% if field.help_text %}
-          <small style="color: grey">{{ field.help_text }}</small>
-        {% endif %}
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <button type="submit">Sign up</button>
+    <div id="login-overlay" class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Acesse o sistema de provas do IME/UERJ</h4>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                  <div class="col-xs-12">
+                <form id="login-form" class="form-horizontal" role="form" action="{% url 'login' %}" method="post">
+                  {% for field in form %}
+                    <p>
+                      <div class="form-group">
+                        <script>function Hide()
+                          {
+                              if(document.getElementById('id_tipoUsuario').options[document.getElementById('id_tipoUsuario').selectedIndex].value == "1")
+                              {
+                                   document.getElementById('hidden_div').style.display = 'none';
+                              }else
+                              {
+                                   document.getElementById('hidden_div').style.display = '';
+                              }
+                          }
+                          </script>
+                     
+                        {% if field.name == 'idCategoria' %}
+                          <div style="display: none;" id="hidden_div">
+                            {{ field.label_tag }}<br>
+                            {{ field|add_class:'form-control' }}
+                          </div>
+                        {% else %}
+                          {{ field.label_tag }}<br>
+                          {{ field|add_class:'form-control' }}
+                        {% endif %}
+                      </div>
+                      {% if field.help_text %}
+                        <small style="color: grey">{{ field.help_text }}</small>
+                      {% endif %}
+                      {% for error in field.errors %}
+                        <p style="color: red">{{ error }}</p>
+                      {% endfor %}
+                    </p>
+                  {% endfor %}
+                  <div class="form-group">
+                  <input type="hidden" name="next" value="{{ next }}" />
+                   <input class="btn btn-success btn-block" type="submit" value="Cadastrar"/>
+              </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
   </form>
+  
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends "polls/base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+{% if user.is_authenticated %}
+    {% if user.usuario.tipoUsuario == 2 %}
+	<div class="col-md-12">
+	<h1 class="display-3 text-center text-primary">Adicionar nova questão</h1>
+	<form id="form" method='POST' action="">
+		{% csrf_token %}
+	{% for field in form %}
+    <div class="form-group">
+        {{ field.label_tag }} 
+        {% if form.is_bound %} 
+            {% if field.errors %} 
+                {% render_field field class="form-control is-invalid" %} 
+                {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{error}}
+                    </div>
+                {% endfor %} 
+            {% else %} 
+                {% render_field field class="form-control is-valid" %} 
+            {% endif %} 
+        {% else %} 
+            {% render_field field class="form-control" %} 
+        {% endif %} 
+
+        {% if field.help_text %}
+            <small class="form-text text-muted">
+               {{ field.help_text }}
+            </small>
+        {% endif %}
+    </div>
+    {% endfor %}
+	<input class="btn btn-primary btn-block" type="submit" value="Salvar">
+</form>
+</div>
+{% else %}
+    <div class="alert alert-danger text-center" role="alert"><strong>Sua conta não tem acesso à essa página.</strong></div>
+{% endif %}
+{% else %}
+    <div class="alert alert-danger text-center" role="alert"><strong>Sua conta não tem acesso à essa página.</strong></div>
+{% endif %}
+{% endblock %}

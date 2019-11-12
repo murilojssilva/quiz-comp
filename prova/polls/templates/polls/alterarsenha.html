@@ -4,8 +4,38 @@
 {% block content %}
 <form method="post">
   {% csrf_token %}
-  {{ form }}
-  <button type="submit">Save changes</button>
+  <div id="login-overlay" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+             <h4 class="modal-title" id="myModalLabel">Alterar senha</h4>
+         </div>
+         <div class="modal-body">
+             <div class="row">
+               <div class="col-xs-12">
+                  <div class="form-group row">
+                    <label for="inputPassword" class="col-sm-3 col-form-label">Senha antiga</label>
+                    <div class="col-sm-9">
+                        <input type="password" class="form-control" name="old_password" placeholder="Senha antiga" required autofocus>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputPassword" class="col-sm-3 col-form-label">Nova senha</label>
+                      <div class="col-sm-9">
+                          <input type="password" class="form-control" name="new_password1" placeholder="Nova senha" required>
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputPassword" class="col-sm-3 col-form-label">Confirmar nova senha</label>
+                      <div class="col-sm-9">
+                       <input type="password" class="form-control" name="new_password2" id="inputPassword" placeholder="Confirmar nova senha" required>
+                      </div>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-block">Alterar senha</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 </form>
 
 {% endblock %}

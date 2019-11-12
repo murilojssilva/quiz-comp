@@ -1,0 +1,40 @@
+{% extends 'polls/base.html' %}
+{% load widget_tweaks %}
+{% block title %}{% endblock %}
+
+{% block content %}
+{% if user.usuario.tipoUsuario == 2 %}
+{% if questoes %}
+	<h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Questões de {% for c in user.usuario.idCategoria.all %}{{c}}{% if forloop.revcounter == 2 %} e {% elif not forloop.last %}, {% endif %}{% endfor %}.</h3>
+	{% for questao in questoes %}
+	   <ul id="questoes">
+	    <hr id="linha" />
+	       <h3 name="questao" id="questao" value="{{questao.idQuestao}}" style="text-align: center;text-transform: uppercase;color: #00008B;;">{{questao.idQuestao}}</h3><h4>{% for c in questao.idCategoria.all %}<span class="label label-success"><a href="/categorias/{{c.idCategoria}}" style="color:#FFFFFF">{{c}} </a></span>{% endfor %}</h4>
+	       {% if questao.textoQuestao is not None %}
+	      <p>{{questao.textoQuestao}}</p>
+	       {% endif %}
+	       {% if questao.imagemQuestao %}
+	       <div class="col-xs-15" align="center">
+	          <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}">
+	          <br>
+	      </div>
+	       {% endif %}
+	       {% if questao.imagem2Questao %}
+	      <div class="col-xs-15" align="center">
+	          <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}">
+	          <br>
+	      </div>
+	       {% endif %}
+	       {% if questao.perguntaQuestao %}
+	      <p>{{questao.perguntaQuestao}}</p>
+	       {% endif %}
+		<a class="btn-block btn btn-primary btn-md" href="/{{questao.idProva}}/{{questao.idQuestao}}" role="button">Visualizar questão</a>
+	    </ul>
+	  {% endfor %}
+  {% else %}
+  	<div class="alert alert-success text-center" role="alert"><strong>Todas as questões de {% for disciplina in user.usuario.idCategoria.all %}{{ disciplina }}{% if forloop.revcounter == 2 %} e {% elif not forloop.last %}, {% endif %}{% endfor %} foram aprovadas.</strong></div>
+  {% endif %}
+ {%else%}
+ 	<div class="alert alert-danger text-center" role="alert"><strong>Sua conta não tem acesso à essa página.</strong></div>
+ {% endif %}
+{% endblock %}

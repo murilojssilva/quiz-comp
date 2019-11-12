@@ -1,108 +1,311 @@
 {% extends 'polls/base.html' %}
 {% block title %}{% endblock %}
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+{% load widget_tweaks %}
 {% block content %}
-
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{{ respostaform.errors }}
+{{ respostaform.non_field_errors }}
+{% if respostaform.errors %}
+  {% for field in respostaform %}
+    {% for error in field.errors %}
+      <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+      </div>
+    {% endfor %}
+  {% endfor %}
+  {% for error in respostaform.non_field_errors %}
+    <div class="alert alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+  {% endfor %}
+{% endif %}
 {% if prova.idProva and questao.idQuestao %}
-        <ul id="questoes">
-        
-          <h2>Questão {{questao.idQuestao}} do {{prova.tipoProva}} {{prova.anoProva}}</h2>
-          <hr id="linha" />
-          {% if questao.statusQuestao == '1' %}  
-          <h3>Questão {{questao.idQuestao}}</h3>
-          {% if questao.textoQuestao is not None %}
-            <p>{{questao.textoQuestao}}</p>
-          {% endif %}
-          {% if questao.imagemQuestao %}
-             <div class="col-xs-15" align="center">
-                <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}">
-                <br>
-            </div>
-          {% endif %}
-          {% if  questao.imagem2Questao %}
-            <div class="col-xs-15" align="center">
-                <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}">
-                <br>
-            </div>
-          {% endif %}
-          {% if questao.perguntaQuestao is not None %}
-            <p>{{questao.perguntaQuestao}}</p>
-          {% endif %}          
-          {% if prova.questao_set.all %}
-            <ul>
-            {% for opcao in questao.opcao_set.all %}
-              {% if questao.tipoQuestao == '2' %}
-              <form action="" id="opcoes">
-                    <script>
-                     function mostrarSel(){
-                      alert(document.getElementsByName("resposta_questao")[0].value);
-                     }
-                     function getRadioValor(name){
-                      var rads = document.getElementsByName(name);
-                      for(var i = 0; i < rads.length; i++){
-                       if(rads[i].checked){
-                        return rads[i].value;
-                       }
-                      }
-
-                      return null;
-                     }
-                    </script>
-
-                    <input type="radio" name="opcao_escolhida" value="A"><label for='{{opcao.aOpcao}}'>a) {{opcao.aOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="B"><label for='{{opcao.bOpcao}}'>b) {{opcao.bOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="C"><label for='{{opcao.cOpcao}}'>c) {{opcao.cOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="D"><label for='{{opcao.dOpcao}}'>d) {{opcao.dOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="E"><label for='{{opcao.eOpcao}}'>e) {{opcao.eOpcao}}</label><br>
-                    {% for resposta in questao.resposta_set.all %}
-                      <input style="display: none;" id="resposta_questao" name="resposta_questao" value='{{resposta.resposta}}'>
-                    {% endfor %}
-                    <button class="btn btn-primary" onclick='mostrarSel()'> Mostra valor </button>
-                    <button type="button" class="btn btn-primary" onclick="Mudarestado('minhaDiv')">Mostrar gabarito</button>
-                    <script type="text/javascript">
-                      function Mudarestado(el) {
-                        var display = document.getElementById(el).style.display;
-                        if(display == "none")
-                          document.getElementById(el).style.display = 'block';
-                        else
-                          document.getElementById(el).style.display = 'none';
-                      }
-                    </script>
-                    <div id="minhaDiv" style="display: none;">Resposta:
-                      {% for resposta in questao.resposta_set.all %}
-                        {{resposta.resposta}}
-                      {% endfor %}
-                    </div>
-              </form>
-              {% elif questao.tipoQuestao == '1' %}
-              <form id="opcoes">
-                {% if opcao.aOpcao %}
-                  <p>a) {{opcao.aOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.bOpcao %}
-                  <p>b) {{opcao.bOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.cOpcao %}
-                  <p>c) {{opcao.cOpcao}}</p><br>
-                  </form>
-                {% endif %}
-                {% if opcao.dOpcao %}
-                  <p>d) {{opcao.dOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.eOpcao %}
-                  <p>e) {{opcao.eOpcao}}</p><br>
-                {% endif %}
-              </form>
-              {% endif %}
-            {% endfor %}
-        </ul>
-      {% endif %}
+    <ul id="questoes">
+      {% if questao.statusQuestao == 1 %}  
+      <p><h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Questão {{questao.idQuestao}}</h3><h4>{% for c in questao.idCategoria.all %}<span class="label label-success"><a href="/categorias/{{c.idCategoria}}" style="color:#FFFFFF">{{c}} </a></span>{% endfor %}</h4>{% if pq == 0  %}
+        <span class="label label-danger">Muito difícil</span>
+      {% elif pq > 0 and pq <= 0.3 %}
+        <span class="label label-danger">Difícil</span>
+      {% elif pq > 0.3 and pq <= 0.6 %}
+        <span class="label label-warning">Média</span>
+      {% elif pq > 0.6 and pq <= 0.9 %}
+       <span class="label label-success">Fácil</span>
       {% else %}
-        <p>Questão {{questao.idQuestao}} indisponível</p>
+        {% if qtdrespostas %}
+          <span class="label label-success">Muito fácil</span>
+        {% endif %}
+      {% endif %}{% if questao.ajuda and user.usuario.tipoUsuario == 1 %}<i style="font-size:24px;color:blue;" class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" title="{{questao.ajuda}}"></i>{% endif %}</p>
+      
+      {% if questao.textoQuestao is not None %}
+      <p>{{questao.textoQuestao}}</p>
       {% endif %}
-    </ul>
+      {% if questao.imagemQuestao %}
+       <div class="col-xs-15" align="center">
+        <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}" style="width:100%;max-width:300px">
+        <br>
+      </div>
+      {% endif %}
+      {% if questao.imagem2Questao %}
+      <div class="col-xs-15" align="center">
+        <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}" style="width:100%;max-width:300px">
+        <br>
+      </div>
+      {% endif %}
+      {% if questao.perguntaQuestao is not None %}
+      <p>{{questao.perguntaQuestao}}</p>
+      {% endif %}
+      {% if user.usuario.tipoUsuario == 2 %}
+            {% if questao.aOpcao %}
+             A) {{questao.aOpcao}} {% if questao.respostaQuestao == 'A' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.bOpcao %}
+             B) {{questao.bOpcao}} {% if questao.respostaQuestao == 'B' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.cOpcao %}
+             C) {{questao.cOpcao}} {% if questao.respostaQuestao == 'C' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.dOpcao %}
+             D) {{questao.dOpcao}} {% if questao.respostaQuestao == 'D' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.eOpcao %}
+             E) {{questao.eOpcao}} {% if questao.respostaQuestao == 'E' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+        {% if totalRespostas %}
+          <div align="center" id="piechart"></div>
+          <script type="text/javascript">
+          // Load google charts
+          google.charts.load('current', {'packages':['corechart']});
+          google.charts.setOnLoadCallback(drawChart);
+          function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+            ['Respostas', 'Quantidade'],
+            ['A', {{A|length}}],
+            ['B', {{B|length}}],
+            ['C', {{C|length}}],
+            ['D', {{D|length}}],
+            ['E', {{E|length}}]
+          ]);
+            var options = {'title':'Respostas', 'width':550, 'height':400};
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+          }
+          </script>
+        {% else %}
+         {% if user.usuario.tipoUsuario == 1 %}
+          <div class="alert alert-danger text-center" role="alert"><strong>Questão ainda não foi respondida</strong></div>
+         {% endif %}
+        {% endif %}
+      {% else %}
+      {% if prova.questao_set.all %}
+        {% if questao.tipoQuestao == 1 %}
+        {% if respostas %}
+        {% for resposta in respostas %}
+        {% if questao.aOpcao %}
+             A) {{questao.aOpcao}} {% if resposta.resposta == 'A' and not resposta.certaresposta %}<i style="color:red" class="fa fa-close" aria-hidden="true"></i>{% endif %} {% if questao.respostaQuestao == 'A' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.bOpcao %}
+             B) {{questao.bOpcao}} {% if resposta.resposta == 'B' and not resposta.certaresposta %}<i style="color:red" class="fa fa-close" aria-hidden="true"></i>{% endif %} {% if questao.respostaQuestao == 'B' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.cOpcao %}
+             C) {{questao.cOpcao}} {% if resposta.resposta == 'C' and not resposta.certaresposta %}<i style="color:red" class="fa fa-close" aria-hidden="true"></i>{% endif %} {% if questao.respostaQuestao == 'C' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.dOpcao %}
+             D) {{questao.dOpcao}} {% if resposta.resposta == 'D' and not resposta.certaresposta %}<i style="color:red" class="fa fa-close" aria-hidden="true"></i>{% endif %} {% if questao.respostaQuestao == 'D' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+              {% if questao.eOpcao %}
+             E) {{questao.eOpcao}} {% if resposta.resposta == 'E' and not resposta.certaresposta %}<i style="color:red" class="fa fa-close" aria-hidden="true"></i>{% endif %} {% if questao.respostaQuestao == 'E' %}<i style="color:green" class="fa fa-check" aria-hidden="true"></i>{% endif %}<br>
+              {% endif %}
+          {% endfor %}
+        {% else %}
+          <form action="" method="post">{% csrf_token %}
+           {% for choice in respostaform.resposta %}
+             <div class="funkyradio">       
+            {% if forloop.counter == 1 %}
+               <div class="funkyradio-success">
+                 <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+                 <label for="{{ choice.id_for_label  }}">{{questao.aOpcao}}</label>
+               </div>
+            {% elif forloop.counter == 2 %}
+             <div class="funkyradio-success">
+                 <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+                 <label for="{{ choice.id_for_label  }}">{{questao.bOpcao}}</label>
+               </div>
+            {% elif forloop.counter == 3 %}
+             <div class="funkyradio-success">
+                 <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+                 <label for="{{ choice.id_for_label  }}">{{questao.cOpcao}}</label>
+               </div>
+            {% elif forloop.counter == 4 %}
+             <div class="funkyradio-success">
+                 <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+                 <label for="{{ choice.id_for_label  }}">{{questao.dOpcao}}</label>
+               </div>
+            {% elif forloop.counter == 5 %}
+             <div class="funkyradio-success">
+                 <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+                 <label for="{{ choice.id_for_label  }}">{{questao.eOpcao}}</label>
+               </div>
+            {% endif %}
+             </div>
+           {% endfor %}
+           <input class="btn btn-primary btn-block" type="submit" value="Responder">
+          </form>
+        {% endif %}
+        {% elif questao.tipoQuestao == 2  %}
+        <form action="" method="post">{% csrf_token %}
+        {% if questao.aOpcao %}
+          {% if Aresposta %}
+          {% for resposta in Aresposta %}
+            <pre><code><h4><p>A) {{questao.aOpcao}}</p><br> Sua resposta:</h4><br>{{resposta.respostaA}}</code></pre>
+          {% endfor %}
+          {% else %}
+          A) {{questao.aOpcao}}</p><br>
+              {{ respostaform.respostaA }}
+              <input style="width:100%" class="btn btn-primary btn-block" type="submit" value="Responder">
+          {% endif %}
+        {% endif %}
+        <hr class="line" />
+        {% if questao.bOpcao %}
+          {% if Bresposta  %}
+          {% for resposta in Bresposta %}
+            <pre><code><h4><p>A) {{questao.bOpcao}}</p><br> Sua resposta:</h4><br>{{resposta.respostaB}}</code></pre>
+          {% endfor %}
+          {% else %}
+          B) {{questao.bOpcao}}</p><br>
+          {{ respostaform.respostaB }}
+          <input style="width:100%" class="btn btn-primary btn-block" type="submit" value="Responder">
+          {% endif %}
+        {% endif %}
+        <hr class="line" />
+        {% if questao.cOpcao %}
+          {% if Cresposta  %}
+          {% for resposta in Cresposta %}
+            <pre><code><h4><p>C) {{questao.cOpcao}}</p><br> Sua resposta:</h4><br>{{resposta.respostaC}}</code></pre>
+          {% endfor %}
+          {% else %}
+          C) {{questao.cOpcao}}</p><br>
+              {{ respostaform.respostaC }}
+              <input style="width:100%" class="btn btn-primary btn-block" type="submit" value="Responder">
+          {% endif %}
+        {% endif %}
+        <hr class="line" />
+        {% if questao.dOpcao %}
+          {% if Dresposta  %}
+          {% for resposta in Dresposta %}
+            <pre><code><h4><p>D) {{questao.dOpcao}}</p><br> Sua resposta:</h4><br>{{resposta.respostaD}}</code></pre>
+          {% endfor %}
+          {% else %}
+          D) {{questao.dOpcao}}</p><br>
+              {{ respostaform.respostaD }}
+              <input style="width:100%" class="btn btn-primary btn-block" type="submit" value="Responder">
+          {% endif %}
+        {% endif %}
+        <hr class="line" />
+        {% if questao.eOpcao %}
+          {% if Eresposta and questao.eOpcao  %}
+          {% for resposta in Aresposta %}
+            <pre><code><h4><p>A) {{questao.eOpcao}}</p><br> Sua resposta:</h4><br>{{resposta.respostaE}}</code></pre>
+          {% endfor %}
+          {% else %}
+          E) {{questao.eOpcao}}</p><br>
+              {{ respostaform.respostaE }}
+              <input style="width:100%" class="btn btn-primary btn-block" type="submit" value="Responder">
+          {% endif %}
+        {% endif %}
+        
+        </form>  
+      {% endif %}
+        {% endif %}
+    {% endif %}
+    {% else %}
+    <div class="alert alert-danger text-center" role="alert"><strong>Questão {{questao.idQuestao}} indisponível.</strong></div>
+    <h3 name="questao" id="questao" value="{{questao.idQuestao}}" style="text-align: center;text-transform: uppercase;color: #00008B;;">{{questao.idQuestao}}</h3><h4>{% for c in questao.idCategoria.all %}<span class="label label-success"><a href="/categorias/{{c.idCategoria}}" style="color:#FFFFFF">{{c}} </a></span>{% endfor %}</h4>
+         {{ request.GET.id_questao }}
+         {% if questao.textoQuestao is not None %}
+        <p>{{questao.textoQuestao}}</p>
+         {% endif %}
+         {% if questao.imagemQuestao %}
+         <div class="col-xs-15" align="center">
+            <img class="img-responsive" id="myImg1" src="/{{questao.imagemQuestao}}" style="width:100%;max-width:300px">
+            <br>
+        </div>
+         {% endif %}
+         {% if questao.imagem2Questao %}
+        <div class="col-xs-15" align="center">
+            <img class="img-responsive" id="myImg2" src="/{{questao.imagem2Questao}}" style="width:100%;max-width:300px">
+            <br>
+        </div>
+         {% endif %}
+         <div id="myModal1" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="img01">
+            <div id="caption"></div>
+          </div>
+          <div id="myModal2" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="img02">
+            <div id="caption"></div>
+          </div>
+         {% if questao.perguntaQuestao %}
+        <p>{{questao.perguntaQuestao}}</p>
+         {% endif %}
   
+    <form id="form" method='POST' action="">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          {{ field.label_tag }} 
+          {% if form.is_bound %} 
+              {% if field.errors %} 
+                  {% render_field field class="form-control is-invalid" %} 
+                  {% for error in field.errors %}
+                      <div class="invalid-feedback">
+                          {{error}}
+                      </div>
+                  {% endfor %} 
+              {% else %} 
+                  {% render_field field class="form-control is-valid" %} 
+              {% endif %} 
+          {% else %} 
+              {% render_field field class="form-control" %} 
+          {% endif %} 
+
+          {% if field.help_text %}
+              <small class="form-text text-muted">
+                 {{ field.help_text }}
+              </small>
+          {% endif %}
+      </div>
+      {% endfor %}
+      <input class="btn btn-primary btn-block" type="submit" value="Aprovar questão">
+    {% endif %}
+  </ul>
   {% else %}
-    <p>Não há questões nessa prova</p>
+  <p>Não há questões nessa prova</p>
+    {% endif %}
+{% if is_paginated %}
+  <ul class="pagination">
+  {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+  {% else %}
+    <li class="disabled"><span>&laquo;</span></li>
   {% endif %}
+  {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+    {% else %}
+    <li><a href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}
+    <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+  {% else %}
+    <li class="disabled"><span>&raquo;</span></li>
+  {% endif %}
+  </ul>
+{% endif %}
+</script>
 {% endblock %}

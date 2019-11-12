@@ -1,135 +1,60 @@
 {% extends 'polls/base.html' %}
-{% block title %}{% endblock %}
 
 {% block content %}
 
-{% if prova.questao_set.all %}
-        <h2>Questões do {{prova.tipoProva}} {{prova.anoProva}}</h2>
-        <ul id="questoes">
-        {% for questao in prova.questao_set.all %}
-          <hr id="linha" />
-          {% if questao.statusQuestao == '1' %}  
-          <h3>Questão <a href="{{questao.idQuestao}}">{{questao.idQuestao}}</a> {% for categoria in questao.categoria.all %}
-                        {{categoria.idCategoria}}
-                      {% endfor %}</h3>
+{% if user.is_authenticated %}
+
+{% if prova.questao_set.all and user  %}
+  <h1 class="display-3 text-center text-primary">{{prova.tipoProva}} {{prova.anoProva}}</h1>
+  <div align="center"><img src="/static/img/{{prova}}.png"></div>
+   <ul id="questoes">
+     {% for questao in prova.questao_set.all %}
+       <hr id="linha" />
+        {% if questao.statusQuestao == 1 %}
+          <h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Questão {{questao.idQuestao}}</h3><h4>{% for c in questao.idCategoria.all %}<span class="label label-success"><a href="/categorias/{{c.idCategoria}}" style="color:#FFFFFF">{{c}} </a></span>{% endfor %}</h4>
           {% if questao.textoQuestao is not None %}
             <p>{{questao.textoQuestao}}</p>
           {% endif %}
           {% if questao.imagemQuestao %}
              <div class="col-xs-15" align="center">
-                <img class="img-responsive" id="img1" src="/{{questao.imagemQuestao}}">
+                <img class="img-responsive" id="myImg1" src="/{{questao.imagemQuestao}}" style="width:100%;max-width:300px">
                 <br>
             </div>
           {% endif %}
-          {% if  questao.imagem2Questao %}
+          {% if questao.imagem2Questao %}
             <div class="col-xs-15" align="center">
-                <img class="img-responsive" id="img2" src="/{{questao.imagem2Questao}}">
+                <img class="img-responsive" id="myImg2" src="/{{questao.imagem2Questao}}" style="width:100%;max-width:300px">
                 <br>
             </div>
           {% endif %}
-          {% if questao.perguntaQuestao is not None %}
+          {% if questao.perguntaQuestao %}
             <p>{{questao.perguntaQuestao}}</p>
-          {% endif %}          
-          {% if prova.questao_set.all %}
-            <ul>
-            {% for opcao in questao.opcao_set.all %}
-              {% if questao.tipoQuestao == '2' %}
-              
-                <form action="" id="opcoes">
-                    <script>
-
-                    function mostrarSel(){
-                      x = "{{resposta.resposta}}";
-                      alert(x);
-                      
-                     }
-                     function getRadioValor(name){
-                      var rads = document.getElementsByName(name);
-                      for(var i = 0; i < rads.length; i++){
-                       if(rads[i].checked){
-                        return rads[i].value;
-                       }
-                      }
-
-                      return null;
-                     }
-                    </script>
-
-                    <input type="radio" name="opcao_escolhida" value="A"><label for='{{opcao.aOpcao}}'>a) {{opcao.aOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="B"><label for='{{opcao.bOpcao}}'>b) {{opcao.bOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="C"><label for='{{opcao.cOpcao}}'>c) {{opcao.cOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="D"><label for='{{opcao.dOpcao}}'>d) {{opcao.dOpcao}}</label><br>
-                    <input type="radio" name="opcao_escolhida" value="E"><label for='{{opcao.eOpcao}}'>e) {{opcao.eOpcao}}</label><br>
-                    
-                    {% for resposta in questao.resposta_set.all %}
-                      <input style="display: none;" id="resposta_questao" name="resposta_questao" value='{{resposta.resposta}}'>
-                    {% endfor %}
-                    <button class="btn btn-primary" onclick='mostrarSel()'> Mostra valor </button>
-                    <button type="button" class="btn btn-primary" onclick="Mudarestado('minhaDiv')">Mostrar gabarito</button>
-                    <script type="text/javascript">
-                      function Mudarestado(el) {
-                        var display = document.getElementById(el).style.display;
-                        if(display == "none")
-                          document.getElementById(el).style.display = 'block';
-                        else
-                          document.getElementById(el).style.display = 'none';
-                      }
-                    </script>
-                    <div id="minhaDiv" style="display: none;">Resposta:
-                      {% for resposta in questao.resposta_set.all %}
-                        {{resposta.resposta}}
-                      {% endfor %}
-                    </div>
-              </form>
-
-              {% elif questao.tipoQuestao == '1' %}
-              <form id="opcoes">
-                {% if opcao.aOpcao %}
-                  <p>a) {{opcao.aOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.bOpcao %}
-                  <p>b) {{opcao.bOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.cOpcao %}
-                  <p>c) {{opcao.cOpcao}}</p><br>
-                  </form>
-                {% endif %}
-                {% if opcao.dOpcao %}
-                  <p>d) {{opcao.dOpcao}}</p><br>
-                {% endif %}
-                {% if opcao.eOpcao %}
-                  <p>e) {{opcao.eOpcao}}</p><br>
-              </form>
-                {% else %}
-                {% endif %}
+          {% endif %}
+          {% if questao.aOpcao %}
+             A) {{questao.aOpcao}}<br>
               {% endif %}
-            {% endfor %}
-        </ul>
-      {% endif %}
+              {% if questao.bOpcao %}
+             B) {{questao.bOpcao}}<br>
+              {% endif %}
+              {% if questao.cOpcao %}
+             C) {{questao.cOpcao}}<br>
+              {% endif %}
+              {% if questao.dOpcao %}
+             D) {{questao.dOpcao}}<br>
+              {% endif %}
+              {% if questao.eOpcao %}
+             E) {{questao.eOpcao}}<br>
+              {% endif %}
+            <a class="btn-block btn btn-primary btn-md" href="/{{questao.idProva}}/{{questao.idQuestao}}" role="button">Visualizar questão</a>
       {% else %}
-        <p>Questão {{questao.idQuestao}} indisponível</p>
+        <div class="alert alert-danger text-center" role="alert"><strong>Questão {{questao.idQuestao}} indisponível.</strong></div>
+        <a class="btn-block btn btn-primary btn-md" href="/{{questao.idProva}}/{{questao.idQuestao}}" role="button">Analisar aprovação</a>
       {% endif %}
     {% endfor %}
     </ul>
   {% else %}
-    <p>Não há questões nessa prova</p>
+    <div class="alert alert-danger text-center" role="alert"><strong>Não há questões nesta prova.</strong></div>
         {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% if is_paginated %}
   <ul class="pagination">
     {% if page_obj.has_previous %}
@@ -149,17 +74,11 @@
     {% else %}
       <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
-  </ul>
+  </ul>{% else %}
+  <h1 class="alert alert-danger text-center" role="alert">Não há questões para serem exibidas.</h1>
 {% endif %}
-</script>
 
-
-
-
-
-
-
-
-
-
+{% else %}
+  <h1 class="alert alert-danger text-center" role="alert">Se autentifique para poder acessar a questão.</h1>
+{% endif %}
 {% endblock %}

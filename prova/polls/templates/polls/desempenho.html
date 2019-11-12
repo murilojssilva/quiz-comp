@@ -1,0 +1,58 @@
+{% extends 'polls/base.html' %}
+{% load widget_tweaks %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% block content %}
+  {% if user.usuario.tipoUsuario == 1 %}
+    {% if respostasME %}
+
+   <h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Seu desempenho</h3>
+   <div>
+      {% if pq == 0  %}
+        <div class="alert alert-danger text-center" role="alert"><strong>Você não acertou nenhuma questão e possui {{pontos}} pontos</strong></div>
+      {% elif pq > 0 and pq <= 0.2 %}
+        <div class="alert alert-danger text-center" role="alert"><strong>Seu desempenho precisa melhorar. Você possui {{pontos}} pontos.</strong></div>
+      {% elif pq > 0.2 and pq <= 0.4 %}
+        <div class="alert alert-danger text-center" role="alert"><strong>Seu desempenho precisa melhorar. Você possui {{pontos}} pontos.</strong></div>
+      {% elif pq > 0.4 and pq <= 0.6 %}
+        <div class="alert alert-warning text-center" role="alert"><strong>Seu desempenho intermediário. Você possui {{pontos}} pontos.</strong></div>
+      {% elif pq > 0.6 and pq <= 0.8 %}
+        <div class="alert alert-info text-center" role="alert"><strong>Seu desempenho é bom. Você possui {{pontos}} pontos.</strong></div>
+      {% elif pq > 0.8 and pq < 1  %}
+        <div class="alert alert-info text-center" role="alert"><strong>Seu desempenho é muito bom. Você possui {{pontos}} pontos.</strong></div>
+      {% else %}
+        <div class="alert alert-success text-center" role="alert"><strong>Parabéns. Você acertou todas as questões e possui {{pontos}} pontos.</strong></div>
+      {% endif %}
+       <div id="oioioi"></div>
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+         <script>
+         Highcharts.chart('oioioi', {
+         chart: {
+           type: 'pie'
+         },
+           title: {
+           text: ''
+           },
+           xAxis: {
+           categories: [{% for resposta in respostas %}'{{ resposta }}',{% endfor %}]
+           },
+           series: [{
+         name: 'Respostas',
+         colorByPoint: true,
+         data: [
+         {
+         name: 'Certas',
+         y: {{respostascertas}}
+         },{
+         name: 'Erradas',
+         y: {{respostasME}}
+         }]
+           }]
+         });
+         </script>
+         {% else %}
+         <div class="alert alert-warning text-center" role="alert"><strong>Você ainda não respondeu nenhuma questão</strong></div>
+        {% endif %}
+         {% else %}
+         <div class="alert alert-danger text-center" role="alert"><strong>Você não tem permissão para acessar este endereço</strong></div>
+  {% endif %}
+{% endblock %}

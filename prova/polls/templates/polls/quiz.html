@@ -1,0 +1,113 @@
+{% extends "polls/base.html" %}
+{% block title %}{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+{% if user.usuario.tipoUsuario == 1 %}
+	{% if not respostas %}
+		   <ul id="questoes">
+			  {% if questao.statusQuestao == 1 %}
+			  <p><h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Questão {{questao.idQuestao}}</h3><div class="col-md-10"><h4>{% for c in questao.idCategoria.all %}<span class="label label-success"><a href="/categorias/{{c.idCategoria}}" style="color:#FFFFFF">{{c}} </a></span>{% endfor %}</h4>{% if pq == 0  %}
+		
+        <span class="label label-danger">Muito difícil</span>
+      {% elif pq > 0 and pq <= 0.3 %}
+        <span class="label label-danger">Difícil</span>
+      {% elif pq > 0.3 and pq <= 0.6 %}
+        <span class="label label-warning">Média</span>
+      {% elif pq > 0.6 and pq <= 0.9 %}
+       <span class="label label-success">Fácil</span>
+      {% else %}
+      	{% if qtdrespostas %}
+        	<span class="label label-success">Muito fácil</span>
+       	{% endif %}
+      {% endif %}</div>{% if questao.ajuda %}<i class="fa fa-info-circle" style="font-size:24px;color:blue;" data-toggle="tooltip" data-placement="bottom" title="{{questao.ajuda}}"></i>{% endif %}<div class="col-md-2"><h3><div align="right" style="color:#00008B" id=timer></div></h3></div></p>
+			  <script type="text/javascript">
+				    var timeoutHandle;
+				    function countdown(minutes, seconds) {
+				        function tick() {
+				            var counter = document.getElementById("timer");
+				            counter.innerHTML =  minutes.toString() + ":" + (seconds < 10 ? "0" : "") + String(seconds);
+				            seconds--;
+				            if (seconds >= 0) {
+				                timeoutHandle = setTimeout(tick, 1000);
+				            } else {
+				                if (minutes >= 1) {
+				                    // countdown(mins-1);   never reach “00″ issue solved:Contributed by Victor Streithorst
+				                    setTimeout(function () {
+				                        countdown(minutes - 1, 59);
+				                    }, 1000);
+				                }
+				            }
+				            if (seconds== 0 && minutes ==0){
+				            	setTimeout(function(){alert("Questão {{questao.idQuestao}} não respondida. Tempo esgotado");location.href = "/quiz";},1000);
+									setTimeout(function(){document.respostaform.submit()},1000);
+				            }
+				        }
+				        tick();
+				    }
+				    countdown(2, 00);
+			  		
+			  </script>
+			  {% if questao.textoQuestao is not None %}
+				<p>{{questao.textoQuestao}}</p>
+			  {% endif %}
+			  {% if questao.imagemQuestao %}
+				 <div class="col-xs-15" align="center">
+					<img class="img-responsive" id="myImg1" src="/{{questao.imagemQuestao}}" style="width:100%;max-width:300px">
+					<br>
+				</div>
+			  {% endif %}
+			  {% if questao.imagem2Questao %}
+				<div class="col-xs-15" align="center">
+					<img class="img-responsive" id="myImg2" src="/{{questao.imagemQuestao}}" style="width:100%;max-width:300px">
+					<br>
+				</div>
+			  {% endif %}
+			  {% if questao.perguntaQuestao is not None %}
+				<p>{{questao.perguntaQuestao}}</p>
+			  {% endif %}
+
+			   <form id="respostaform" name="respostaform" action="" method="POST">
+			   	<input type="hidden" id="idQuestao" name="idQuestao" value="{{questao.idQuestao}}">
+			   	 {% csrf_token %}
+				 {% for choice in respostaform.resposta %}
+				   <div class="funkyradio">				
+					{% if forloop.counter == 1 %}
+					   <div class="funkyradio-success">
+						   <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+						   <label for="{{ choice.id_for_label  }}">{{questao.aOpcao}}</label>
+					   </div>
+					{% elif forloop.counter == 2 %}
+					 <div class="funkyradio-success">
+						   <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+						   <label for="{{ choice.id_for_label  }}">{{questao.bOpcao}}</label>
+					   </div>
+					{% elif forloop.counter == 3 %}
+					 <div class="funkyradio-success">
+						   <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+						   <label for="{{ choice.id_for_label  }}">{{questao.cOpcao}}</label>
+					   </div>
+					{% elif forloop.counter == 4 %}
+					 <div class="funkyradio-success">
+						   <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+						   <label for="{{ choice.id_for_label  }}">{{questao.dOpcao}}</label>
+					   </div>
+					{% elif forloop.counter == 5 %}
+					 <div class="funkyradio-success">
+						   <input  type="radio" name="radio" id="radio1" />{{ choice.tag }}
+						   <label for="{{ choice.id_for_label  }}">{{questao.eOpcao}}</label>
+					   </div>
+					{% endif %}
+				   </div>
+				 {% endfor %}
+				 <input class="btn btn-primary btn-block" type="submit" value="Responder">
+			   </form>  
+		  {% else %}
+		  <div class="alert alert-danger text-center" role="alert"><strong>Todas as questões foram respondida.</strong></div>
+		  {% endif %}
+		  {% else %}
+		  <div class="alert alert-danger text-center" role="alert"><strong>Todas as questões foram respondidas.</strong></div>
+		 {% endif %}
+	{% else %}
+		<div class="alert alert-danger text-center" role="alert"><strong>Você não tem permissão para acessar este endereço</strong></div>
+	{% endif %}
+{% endblock %}

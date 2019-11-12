@@ -1,73 +1,65 @@
-{% extends "polls/base.html" %}
-
+{% extends 'polls/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
 {% if form.errors %}
 
-<p>Sua matrícula ou senha estão incorretas. Tente novamente</p>
+<div class="alert alert-danger text-center" role="alert"><strong>Seu endereço de e-mail, nome de usuário e/ou senha estão incorretos. Tente novamente</strong></div>
 {% endif %}
 
 {% if next %}
-    {% if user.is_authenticated %}
+	{% if user.is_authenticated %}
 
-<p>Sua conta não tem acesso à essa página. Para prosseguir, por favor acesse com a sua matrícula</p>
-    {% else %}
+<div class="alert alert-danger text-center" role="alert"><strong>Sua conta não tem acesso à essa página. Para prosseguir, por favor acesse com a sua matrícula</strong></div>
+	{% else %}
 
-<p>Por favor, faça a autenticação neste site para visualizar esta página</p>
-    {% endif %}
+<div class="alert alert-danger text-center" role="alert"><strong>Por favor, faça a autenticação neste site para visualizar esta página</strong></div>
+	{% endif %}
 {% endif %}
-    
-
+	
+<input type="hidden" name="next" value="{{ next }}" />
 <div id="login-overlay" class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel">Acesse o sistema de provas do IME/UERJ</h4>
-          </div>
-          <div class="modal-body">
-              <div class="row">
-                  <div class="col-xs-12">
-						    <form id="login-form" class="form-horizontal" role="form" action="{% url 'login' %}" method="post">{% csrf_token %}
-
-							<div class="form-group">
-								<label for="id_username" class="col-lg-2 control-label">Matrícula</label>
-								<div class="col-lg-10">
-									<input type="text" class="form-control" id="id_username" name="username" placeholder="Matrícula" value="{{ username }}">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="id_password" class="col-lg-2 control-label">Senha</label>
-								<div class="col-lg-10">
-									<input type="password" class="form-control" id="id_password" name="password" placeholder="Senha" value="{{ password }}">
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-lg-offset-2 col-lg-10">
-									<div class="checkbox">
-										<input type="checkbox" id="checkbox-1">
-										<label for="checkbox-1">Me manter conectado</label>
-									</div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-lg-offset-2 col-lg-10">
-									<input type="hidden" name="next" value="{{ next }}" />
-    <input class="btn btn-success btn-block" type="submit" value="Login"/>
-								</div>
-							</div>
-						</form>
-
-						              </div>
-						          </div>
-						      </div>
+	  <div class="modal-content">
+		  <div class="modal-header">
+			  <h4 class="text-center modal-title" id="myModalLabel">Acesse o sistema de provas do IME/UERJ</h4>
+		  </div>
+		  <div class="modal-body">
+			  <div class="row">
+				  <div class="col-xs-12">
+				  	<form action="." method="post">
+						{% csrf_token %}
+						{% if form.non_field_errors %}
+						  <div class="non-field-errors">
+							{% for err in form.non_field_errors %}
+							  <div class="alert alert-warning text-center" role="alert"><strong><p class="form-error">{{ err }}</p></strong></div>
+							{% endfor %}
 						  </div>
-
-
-
-
+						{% endif %}
+						{% for field in form %}
+					 	<div class="field-wrapper">
+							<div class="label-wrapper">
+								{% if field.name == "username" %}
+									<strong>Nome de usuário/E-mail</strong>
+								{% else %}
+									{{ field.label_tag }}
+								{% endif %}
+								{% if field.field.required %}<span class="required">*</span>{% endif %}
+							</div>
+							<div class="value-wrapper">
+								{{ field|add_class:'form-control' }}
+								{{ field.errors|add_class:'required' }}
+							</div>
+					 	</div>
+					 {% endfor %}<br>
+					 <div class="submit-wrapper">
+						<input class="btn btn-success btn-block" type="submit" value="Login"/>
+					 </div>
+					</form>
+			</div>
+		</div>
+	</div>
+</div>
 {%  endblock %}
-
 {% block javascript %}
-
-
 <script>
 {% if not user.is_authenticated %}
 $("ul.nav.navbar-nav.navbar-right").css("display","none");

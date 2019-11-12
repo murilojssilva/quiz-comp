@@ -1,0 +1,42 @@
+{% extends 'polls/base.html' %}
+{% load widget_tweaks %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% block content %}
+  {% if user.usuario.tipoUsuario == 2 %}
+    {% if respostasME %}
+   <h3 style="text-align: center;text-transform: uppercase;color: #00008B;;">Desempenho em {% for c in user.usuario.idCategoria.all %}{{c}}{% if forloop.revcounter == 2 %} e {% elif not forloop.last %}, {% endif %}{% endfor %}.</h3>
+   <div>
+       <div id="oioioi"></div>
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+         <script>
+         Highcharts.chart('oioioi', {
+         chart: {
+           type: 'pie'
+         },
+           title: {
+           text: ''
+           },
+           xAxis: {
+           categories: [{% for resposta in respostas %}'{{ resposta }}',{% endfor %}]
+           },
+           series: [{
+         name: 'Respostas',
+         colorByPoint: true,
+         data: [
+         {
+         name: 'Certas',
+         y: {{respostascertas}}
+         },{
+         name: 'Erradas',
+         y: {{respostasME}}
+         }]
+           }]
+         });
+         </script>
+         {% else %}
+         <div class="alert alert-warning text-center" role="alert"><strong>Nenhuma questão de {% for c in user.usuario.idCategoria.all %}{{c}}{% if forloop.revcounter == 2 %} e {% elif not forloop.last %}, {% endif %}{% endfor %} foi respondida.</strong></div>
+        {% endif %}
+         {% else %}
+         <div class="alert alert-danger text-center" role="alert"><strong>Você não tem permissão para acessar este endereço</strong></div>
+  {% endif %}
+{% endblock %}

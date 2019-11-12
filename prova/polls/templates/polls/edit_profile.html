@@ -1,0 +1,122 @@
+{% extends "polls/base.html" %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+
+<script type="text/javascript">
+    function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#myimg').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+$(function () { //document ready call
+    $("#id_avatar").change(function(){
+        readURL(this);
+    });
+});
+  </script>
+
+
+<form method="POST" action="{% url 'edit_profile' %}" class="" enctype="multipart/form-data">
+	<div id="login-overlay" class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+			 <h4 class="modal-title" id="myModalLabel">Editar perfil</h4>
+		 </div>
+	<div class="modal-body">
+			 <div class="row">
+          <div align="center"> <img id="myimg" alt="Foto de perfil" src="/{{user.usuario.avatar}}" class="img-circle img-responsive" style="height: 263px;width: 263px;"> </div>
+			   <div class="col-xs-12">
+  {% csrf_token %}
+
+   {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+  {% endfor %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {% for error in form.non_field_errors %}
+        {{ error }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% for field in form.visible_fields %}
+    <div class="form-group">
+      {{ field.label_tag }}
+      {% if form.is_bound %}
+        {% if field.errors %}
+          {% render_field field class="form-control is-invalid" %}
+          {% for error in field.errors %}
+            <div class="invalid-feedback">
+              {{ error }}
+            </div>
+          {% endfor %}
+        {% else %}
+          {% render_field field class="form-control is-valid" %}
+        {% endif %}
+      {% else %}
+        {% render_field field class="form-control" %}
+      {% endif %}
+      {% if field.help_text %}
+        <small class="form-text text-muted">{{ field.help_text }}</small>
+      {% endif %}
+    </div>
+  {% endfor %}
+  {% for field in profile_form.visible_fields %}
+    <div class="form-group">
+      {% if profile_form.is_bound %}
+        {% if field.errors %}
+          {% render_field field class="form-control is-invalid" %}
+          {% for error in field.errors %}
+            <div class="invalid-feedback">
+              {{ error }}
+            </div>
+          {% endfor %}
+        {% else %}
+          {% render_field field class="form-control is-valid" %}
+        {% endif %}
+      {% else %}
+       {% if field.name == 'idCategoria' %}
+       {% if request.user.usuario.tipoUsuario == 1 %}
+       <div style="display: none;" id="hidden_div">
+         {{ field.label_tag }}<br>
+         {{ field|add_class:'form-control' }}
+       </div>
+       {% else %}
+       <div id="hidden_div">
+         {{ field.label_tag }}<br>
+         {{ field|add_class:'form-control' }}
+       </div>
+       {% endif %}
+       {% else %}
+       {{ field.label_tag }}<br>
+       {{ field|add_class:'form-control' }}
+       {% endif %}
+      {% endif %}
+
+      {% if field.help_text %}
+        <small class="form-text text-muted">{{ field.help_text }}</small>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary">Atualizar perfil</button>
+  </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</form>
+
+
+{% endblock %}
